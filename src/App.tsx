@@ -1,5 +1,13 @@
+import { useSocket } from './context/socket';
+import Login from './screens/login/login';
+
 function App() {
-  return <div className="App"></div>;
+  const { socket } = useSocket();
+  return (
+    <div className="App">
+      <Login />
+    </div>
+  );
 }
 
 export default App;
