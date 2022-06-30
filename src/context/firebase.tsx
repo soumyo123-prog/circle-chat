@@ -1,8 +1,11 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectDatabaseEmulator, getDatabase } from 'firebase/database';
 
-const firebaseConfig = {
+import * as constants from '../../constants';
+
+let firebaseConfig = {
   apiKey: 'AIzaSyBw4pShntElhZ6DuZhx-vZH_YiwdTSx7ew',
   authDomain: 'circle-chat-fa06c.firebaseapp.com',
   projectId: 'circle-chat-fa06c',
@@ -14,4 +17,11 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const firestore = getFirestore(app);
+export const database = getDatabase(app);
+
+if (constants.DEVELOPMENT_MODE) {
+  connectAuthEmulator(auth, 'http://localhost:9099');
+  connectFirestoreEmulator(firestore, 'localhost', 8080);
+  connectDatabaseEmulator(database, 'localhost', 9000);
+}

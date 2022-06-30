@@ -5,6 +5,7 @@ import {
   signOut,
   User
 } from 'firebase/auth';
+import { onValue, ref } from 'firebase/database';
 import {
   collection,
   doc,
@@ -23,7 +24,7 @@ import {
 } from 'react';
 import { toast } from 'react-toastify';
 
-import { auth, db } from './firebase';
+import { auth, database, firestore } from './firebase';
 
 export interface ChatUserInfo extends User {
   readonly username: string;
@@ -45,7 +46,10 @@ export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
   const [user, setUser] = useState<ChatUserInfo | null>(null);
 
   const requireUsernameToBeUnique = async (username: string) => {
-    const q = query(collection(db, 'users'), where('username', '==', username));
+    const q = query(
+      collection(firestore, 'usernames'),
+      where('username', '==', username)
+    );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       throw new Error('A user with username ' + username + ' already exists.');
@@ -64,7 +68,7 @@ export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
         email,
         password
       );
-      await setDoc(doc(db, 'users', email), {
+      await setDoc(doc(firestore, 'usernames', userCredential.user.uid), {
         username: username
       });
       setUser({ ...userCredential.user, username: username });
@@ -81,7 +85,9 @@ export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
         email,
         password
       );
-      const docSnap = await getDoc(doc(db, 'users', email));
+      const docSnap = await getDoc(
+        doc(firestore, 'usernames', userCredential.user.uid)
+      );
       if (docSnap.exists()) {
         const username = docSnap.data().username;
         setUser({ ...userCredential.user, username: username });
@@ -104,7 +110,7 @@ export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const docSnap = await getDoc(doc(db, 'users', user.email!));
+        const docSnap = await getDoc(doc(firestore, 'usernames', user.uid));
         if (docSnap.exists()) {
           const username = docSnap.data().username;
           setUser({ ...user, username: username });

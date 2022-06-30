@@ -1,1 +1,1 @@
-export const SOCKET_IO_URL = 'http://localhost:8000';
+export const DEVELOPMENT_MODE = true;

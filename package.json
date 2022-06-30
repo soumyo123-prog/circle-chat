@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "firebase": "^9.8.4",
+    "geolib": "^3.3.3",
+    "haversine-distance": "^1.2.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-toastify": "^9.0.5",
